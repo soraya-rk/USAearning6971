@@ -1,0 +1,30 @@
+<style>                     
+
+#dashboard-container h4 {
+    margin: 2%;
+}
+
+#dashboard-container p {
+    margin: 2%;
+    font-weight: 200;
+}
+
+.chart-wrapper-flex {
+    border: none;
+    background: inherit;
+}
+
+.chart-stage.chart-stage-flex  {
+    background: #f5f5f5;
+}
+
+.container-fluid {
+    background: #903b4b;
+}
+
+.chart-title {
+    font-weight: 1000;
+    color: #a690c4;
+}
+
+</style> 

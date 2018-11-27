@@ -1,0 +1,136 @@
+---
+title: "USA Earning per Capita by state (1969 - 1971)"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    css: census.css
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(ggplot2)
+library(plotly)
+```
+
+```{r}
+# Customize My Own Theme
+theme_violet <- theme(legend.key = element_rect(fill="yellow"),
+           text = element_text(color="#9f5f86"),
+           legend.background = element_rect(fill="#ece9f0"),
+           plot.title = element_text(size=8),
+           plot.subtitle = element_text(size=6),
+           panel.background = element_rect(fill="#ece9f0"),
+           panel.border = element_rect(fill=NA),
+           panel.grid.minor.x = element_blank(),
+           panel.grid.major.x = element_blank(),
+           panel.grid.major.y = element_line(color="#cccccc", linetype=3),
+           panel.grid.minor.y = element_blank(),
+           plot.background = element_rect(fill="#ece9f0"),
+           axis.text = element_text(color="#9f5f86", size=6.5),
+           axis.title =  element_text(color="#9f5f86", size=7)
+          )
+```
+
+
+```{r}
+# Manipulating Datasets
+statesdata <- data.frame(state.x77)
+statesname <- data.frame(state.name)
+region <- data.frame(state.region)
+state <- cbind(statesdata, region,state.name)
+
+state$epc <- state$Income/state$Population
+state <- state[order(state$epc),]
+
+state.w <- state[state$state.region =="West",]
+state.s <- state[state$state.region =="South",]
+state.nc <- state[state$state.region =="North Central",]
+state.ne <- state[state$state.region =="Northeast",]
+```
+
+```{r}
+# Create 1st the plot
+plot1 <- ggplot(state, aes(x= reorder(state.name, epc), y=epc))+
+  ylim(0,18)+
+  geom_col(aes(fill=state$state.region), width=0.5)+
+  labs(title="Earning Per Capita All State")+
+  coord_flip()+
+guides(fill = guide_legend(title = "State Region", title.position = "top", label.position = "left", label.hjust = 1))+
+  labs(y="Earning per Capita", x="State Name
+       ")+
+  theme_violet
+
+
+#ggplotly(plot1)
+```
+
+
+```{r}
+# Create the 2nd plot
+plot.west <- ggplot(state.w, aes(x=Population, y=Income))+
+  ylim(3500,6500)+
+  xlim(350,20000)+
+  geom_point(aes(col=state.name, size=Income/Population), alpha=0.6, show.legend = F)+
+  guides(size=F)+
+  theme_violet
+
+plot.south <- ggplot(state.s, aes(x=Population, y=Income))+
+  ylim(3500,6500)+
+  xlim(350,20000)+
+  geom_point(aes(col=state.name, size=Income/Population), alpha=0.6, show.legend = F)+
+  guides(size=F)+
+  theme_violet
+
+plot.nc <- ggplot(state.nc, aes(x=Population, y=Income))+
+  ylim(3500,6500)+
+  xlim(350,20000)+
+  geom_point(aes(col=state.name, size=Income/Population), alpha=0.6, show.legend = F)+
+  guides(size=F)+
+  theme_violet
+
+plot.ne <- ggplot(state.ne, aes(x=Population, y=Income))+
+  ylim(3500,6500)+
+  xlim(350,20000)+
+  geom_point(aes(col=state.name, size=Income/Population), alpha=0.6, show.legend = F)+
+  labs(title="Earning Per Capita by Region")+
+  guides(size=F)+
+  theme_violet
+
+```
+
+
+
+Column {data-width=550}
+-----------------------------------------------------------------------
+
+
+### All States
+
+```{r}
+ggplotly(plot1)
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+<h4><b>Earning per Capita = total income / total population</b></h4>
+This visualization is based on <i>state.x77</i> dataset in R, which contains the USA 1971 census data.<br>
+Findings from the graphs:<br>
+- Alaska has highest earning per capita (high total income with few population).<br>
+- Most of states with high earning per capita is located in west.
+
+Here is the chart describing earning per capita for each region with comparisons to income and population.
+
+### By Region
+
+```{r}
+subplot(
+style(plot.west, showlegend = F),
+style(plot.south, showlegend = F),
+style(plot.nc, showlegend = F),
+style(plot.ne, showlegend = F),
+  nrows=2, shareX=T, shareY=T, widths=c(0.5, 0.5))
+```
+
+
